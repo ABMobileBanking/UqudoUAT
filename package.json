@@ -1,0 +1,15 @@
+{
+  "name": "uqudosdk-cordova",
+  "version": "3.6.2",
+  "description": "Plugin to link native Android and iOS SDK with the ionic application. Using this plugin, ionic apps can now use the Uqudo SDK for enrollment, account recovery and face recognition",
+  "cordova": {
+    "id": "uqudosdk-cordova",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "author": "https://uqudo.com",
+  "homepage": "https://uqudo.com",
+  "license": "MIT"
+}

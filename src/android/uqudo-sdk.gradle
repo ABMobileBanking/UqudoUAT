@@ -1,0 +1,5 @@
+repositories { maven { url "https://rm.dev.uqudo.io/repository/uqudo-public/" } }
+
+dependencies {
+    implementation 'io.uqudo.sdk:Uqudo:3.6.2'
+}
