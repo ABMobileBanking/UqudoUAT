@@ -29,8 +29,17 @@
 				<string>TAG</string>
 			</array>
 		</config-file>
+		<config-file target="*-Info.plist" parent="com.apple.developer.nfc.readersession.iso7816.select-identifiers">
+			<array>
+				<string>A000000018524F500101</string>
+				<string>00000000000000</string>
+			</array>
+		</config-file>
 		<config-file target="*-Info.plist" parent="UQApiBaseURL">
 			<string>https://omn-odp.id.uqudo.io</string>
+		</config-file>
+		<config-file target="*-Info.plist" parent="NFCReaderUsageDescription">
+			<string>This app needs NFC access to read the data inside your document NFC chip</string>
 		</config-file>
 		<config-file parent="/*" target="config.xml">
 			<feature name="UqudoIdPlugin">
