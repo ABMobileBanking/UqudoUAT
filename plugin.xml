@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="uqudosdk-cordova" version="3.6.2">
-   <name>UqudoIdPlugin</name>
-   <js-module name="UqudoIdPlugin" src="www/UqudoIdPlugin.js">
-      <clobbers target="cordova.plugins.UqudoIdPlugin" />
-   </js-module>
-   <platform name="android">
-      <config-file parent="/*" target="res/xml/config.xml">
-         <feature name="UqudoIdPlugin">
-            <param name="android-package" value="io.uqudo.cordova.plugin.UqudoIdPlugin" />
-         </feature>
-      </config-file>
-      <config-file parent="/*" target="AndroidManifest.xml" />
-      <source-file src="src/android/UqudoIdPlugin.java" target-dir="src/io/uqudo/cordova/plugin" />
-      <config-file parent="/resources" target="res/values/strings.xml">
-		<string name="uq_api_base_url" translatable="false">https://omn-odp.id.uqudo.io/</string>
-      </config-file>
-      <framework custom="true" src="src/android/uqudo-sdk.gradle" type="gradleReference" />
-   </platform>
-   <platform name="ios">
-<config-file parent="com.apple.developer.nfc.readersession.formats" platform="ios" target="*-Debug.plist">
+<plugin
+	xmlns="http://apache.org/cordova/ns/plugins/1.0" id="uqudosdk-cordova" version="3.6.2">
+	<name>UqudoIdPlugin</name>
+	<js-module name="UqudoIdPlugin" src="www/UqudoIdPlugin.js">
+		<clobbers target="cordova.plugins.UqudoIdPlugin" />
+	</js-module>
+	<platform name="android">
+		<config-file parent="/*" target="res/xml/config.xml">
+			<feature name="UqudoIdPlugin">
+				<param name="android-package" value="io.uqudo.cordova.plugin.UqudoIdPlugin" />
+			</feature>
+		</config-file>
+		<config-file parent="/*" target="AndroidManifest.xml" />
+		<source-file src="src/android/UqudoIdPlugin.java" target-dir="src/io/uqudo/cordova/plugin" />
+		<config-file parent="/resources" target="res/values/strings.xml">
+			<string name="uq_api_base_url" translatable="false">https://omn-odp.id.uqudo.io/</string>
+		</config-file>
+		<framework custom="true" src="src/android/uqudo-sdk.gradle" type="gradleReference" />
+	</platform>
+	<platform name="ios">
+		<config-file parent="com.apple.developer.nfc.readersession.formats" platform="ios" target="*-Debug.plist">
 			<array>
 				<string>TAG</string>
 			</array>
@@ -28,37 +29,27 @@
 				<string>TAG</string>
 			</array>
 		</config-file>
-		<config-file target="*-Info.plist" parent="com.apple.developer.nfc.readersession.iso7816.select-identifiers">
-			<array>
-				<string>A000000018524F500101</string>
-				<string>00000000000000</string>
-			</array>
-			
-		</config-file>
-		
 		<config-file target="*-Info.plist" parent="UQApiBaseURL">
-		<string>https://omn-odp.id.uqudo.io</string>
+			<string>https://omn-odp.id.uqudo.io</string>
 		</config-file>
-
-
-      <config-file parent="/*" target="config.xml">
-         <feature name="UqudoIdPlugin">
-            <param name="ios-package" value="UqudoIdPlugin" />
-         </feature>
-      </config-file>
-      <source-file src="src/ios/UqudoIdPlugin.m" />
-      <source-file src="src/ios/MyTracer.h" />
-      <podspec>
-         <config/>
-         <pods use-frameworks="true">
-            <pod name="UqudoSDK" spec="3.6.2" />
-         </pods>
-      </podspec>
-      <podspec>
-         <config/>
-         <pods use-frameworks="true">
-            <pod name="OpenSSL-Universal" spec="3.3.3001" />
-         </pods>
-      </podspec>
-   </platform>
+		<config-file parent="/*" target="config.xml">
+			<feature name="UqudoIdPlugin">
+				<param name="ios-package" value="UqudoIdPlugin" />
+			</feature>
+		</config-file>
+		<source-file src="src/ios/UqudoIdPlugin.m" />
+		<source-file src="src/ios/MyTracer.h" />
+		<podspec>
+			<config/>
+			<pods use-frameworks="true">
+				<pod name="UqudoSDK" spec="3.6.2" />
+			</pods>
+		</podspec>
+		<podspec>
+			<config/>
+			<pods use-frameworks="true">
+				<pod name="OpenSSL-Universal" spec="3.3.3001" />
+			</pods>
+		</podspec>
+	</platform>
 </plugin>
