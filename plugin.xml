@@ -16,6 +16,7 @@
 		<config-file parent="/resources" target="app/src/main/res/values/cdv_strings.xml">
 			<string name="uq_api_base_url" translatable="false">https://omn-odp.id.uqudo.io/</string>
 		</config-file>
+		
 		<framework custom="true" src="src/android/uqudo-sdk.gradle" type="gradleReference" />
 	</platform>
 	<platform name="ios">
