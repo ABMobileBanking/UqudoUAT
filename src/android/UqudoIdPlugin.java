@@ -64,6 +64,7 @@ public class UqudoIdPlugin extends CordovaPlugin {
                 return true;
             case "setLocale":
                 setLocale(args.getString(0), context);
+                return true;
             case "enroll": {
                 callback = callbackContext;
                 String message = args.getString(0);
@@ -159,18 +160,7 @@ public class UqudoIdPlugin extends CordovaPlugin {
     }
 
     private void setLocale(String locale, Context context) {
-        System.out.println("----locale" + locale);
-        try {
-            if (locale != null) {
-                Locale myLocale = new Locale(locale);
-                Resources res = context.getResources();
-                Configuration conf = res.getConfiguration();
-                conf.locale = myLocale;
-                res.updateConfiguration(conf, res.getDisplayMetrics());
-            }
-        } catch (Exception e) {
-            Log.e("UqudoPlugin", e.getMessage(), e);
-        }
+        UqudoSDK.setLocale(context, locale);
     }
 
     private void enroll(String message, Context context) {
@@ -220,12 +210,12 @@ public class UqudoIdPlugin extends CordovaPlugin {
                     if (faceObject.has("allowClosedEyes") && faceObject.getBoolean("allowClosedEyes")) {
                         faceBuilder.allowClosedEyes();
                     }
-                    if (faceObject.has("obfuscationType")){
-                        if (faceObject.getString("obfuscationType").equals("FILLED")){
+                    if (faceObject.has("obfuscationType")) {
+                        if (faceObject.getString("obfuscationType").equals("FILLED")) {
                             faceBuilder.enableAuditTrailImageObfuscation(ObfuscationType.FILLED);
-                        } else if (faceObject.getString("obfuscationType").equals("BLURRED")){
+                        } else if (faceObject.getString("obfuscationType").equals("BLURRED")) {
                             faceBuilder.enableAuditTrailImageObfuscation(ObfuscationType.BLURRED);
-                        } else if (faceObject.getString("obfuscationType").equals("FILLED_WHITE")){
+                        } else if (faceObject.getString("obfuscationType").equals("FILLED_WHITE")) {
                             faceBuilder.enableAuditTrailImageObfuscation(ObfuscationType.FILLED_WHITE);
                         }
                     }
@@ -233,7 +223,7 @@ public class UqudoIdPlugin extends CordovaPlugin {
                     if (faceObject.has("isOneToNVerificationEnabled") && faceObject.getBoolean("isOneToNVerificationEnabled")) {
                         faceBuilder.enableOneToNVerification();
                     }
-                    
+
                     if (faceObject.has("enableActiveLiveness") && faceObject.getBoolean("enableActiveLiveness")) {
                         LivenessGesture disableGesture = null;
                         if (faceObject.has("disableLivenessGesture")) {
@@ -345,20 +335,30 @@ public class UqudoIdPlugin extends CordovaPlugin {
                     Document document = documentBuilder.build();
                     enrollment.add(document);
                 }
-                if (json.has("appearanceMode")) {
-                    if ("LIGHT".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    } else if ("DARK".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    } else if ("SYSTEM".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                this.cordova.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (json.has("appearanceMode")) {
+                                if ("LIGHT".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                                } else if ("DARK".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                                } else if ("SYSTEM".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                                }
+                            } else {
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                            }
+                            Intent intent = enrollment.build(context);
+                            UqudoIdPlugin.this.cordova.setActivityResultCallback(UqudoIdPlugin.this);
+                            UqudoIdPlugin.this.cordova.startActivityForResult(UqudoIdPlugin.this, intent, REQUEST_CODE_ENROLLMENT);
+                        } catch (Exception e) {
+                            Log.d("UqudoPlugin", e.getMessage(), e);
+                            sendError(SessionStatusCode.UNEXPECTED_ERROR.name(), e.getMessage(), null);
+                        }
                     }
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                }
-                Intent intent = enrollment.build(context);
-                cordova.setActivityResultCallback(this);
-                cordova.startActivityForResult(this, intent, REQUEST_CODE_ENROLLMENT);
+                });
             } catch (Exception e) {
                 Log.d("UqudoPlugin", e.getMessage(), e);
                 sendError(SessionStatusCode.UNEXPECTED_ERROR.name(), e.getMessage(), null);
@@ -392,25 +392,35 @@ public class UqudoIdPlugin extends CordovaPlugin {
                 }
                 if (json.has("allowClosedEyes") && json.getBoolean("allowClosedEyes")) {
                     recovery.allowClosedEyes();
-                 }
+                }
 
                 if (json.has("isReturnDataForIncompleteSession") && json.getBoolean("isReturnDataForIncompleteSession")) {
                     recovery.returnDataForIncompleteSession();
                 }
-                if (json.has("appearanceMode")) {
-                    if ("LIGHT".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    } else if ("DARK".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    } else if ("SYSTEM".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                this.cordova.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (json.has("appearanceMode")) {
+                                if ("LIGHT".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                                } else if ("DARK".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                                } else if ("SYSTEM".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                                }
+                            } else {
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                            }
+                            Intent intent = recovery.build(context);
+                            UqudoIdPlugin.this.cordova.setActivityResultCallback(UqudoIdPlugin.this);
+                            UqudoIdPlugin.this.cordova.startActivityForResult(UqudoIdPlugin.this, intent, REQUEST_CODE_ACCOUNT_RECOVERY);
+                        } catch (Exception e) {
+                            Log.d("UqudoPlugin", e.getMessage(), e);
+                            sendError(SessionStatusCode.UNEXPECTED_ERROR.name(), e.getMessage(), null);
+                        }
                     }
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                }
-                Intent intent = recovery.build(context);
-                cordova.setActivityResultCallback(this);
-                cordova.startActivityForResult(this, intent, REQUEST_CODE_ACCOUNT_RECOVERY);
+                });
             } catch (Exception e) {
                 Log.d("UqudoPlugin", e.getMessage(), e);
                 sendError(SessionStatusCode.UNEXPECTED_ERROR.name(), e.getMessage(), null);
@@ -447,16 +457,16 @@ public class UqudoIdPlugin extends CordovaPlugin {
                 }
                 if (json.has("allowClosedEyes") && json.getBoolean("allowClosedEyes")) {
                     faceSessionBuilder.allowClosedEyes();
-                 }
+                }
                 if (json.has("isReturnDataForIncompleteSession") && json.getBoolean("isReturnDataForIncompleteSession")) {
                     faceSessionBuilder.returnDataForIncompleteSession();
                 }
-                if (json.has("obfuscationType")){
-                    if (json.getString("obfuscationType").equals("FILLED")){
+                if (json.has("obfuscationType")) {
+                    if (json.getString("obfuscationType").equals("FILLED")) {
                         faceSessionBuilder.enableAuditTrailImageObfuscation(ObfuscationType.FILLED);
-                    } else if (json.getString("obfuscationType").equals("BLURRED")){
+                    } else if (json.getString("obfuscationType").equals("BLURRED")) {
                         faceSessionBuilder.enableAuditTrailImageObfuscation(ObfuscationType.BLURRED);
-                    } else if (json.getString("obfuscationType").equals("FILLED_WHITE")){
+                    } else if (json.getString("obfuscationType").equals("FILLED_WHITE")) {
                         faceSessionBuilder.enableAuditTrailImageObfuscation(ObfuscationType.FILLED_WHITE);
                     }
                 }
@@ -469,21 +479,32 @@ public class UqudoIdPlugin extends CordovaPlugin {
                     }
                 }
 
-                if (json.has("appearanceMode")) {
-                    if ("LIGHT".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    } else if ("DARK".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    } else if ("SYSTEM".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                    }
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                }
+                this.cordova.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (json.has("appearanceMode")) {
+                                if ("LIGHT".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                                } else if ("DARK".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                                } else if ("SYSTEM".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                                }
+                            } else {
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                            }
 
-                Intent intent = faceSessionBuilder.build(context);
-                cordova.setActivityResultCallback(this);
-                cordova.startActivityForResult(this, intent, REQUEST_CODE_FACE_SESSION);
+                            Intent intent = faceSessionBuilder.build(context);
+                            UqudoIdPlugin.this.cordova.setActivityResultCallback(UqudoIdPlugin.this);
+                            UqudoIdPlugin.this.cordova.startActivityForResult(UqudoIdPlugin.this, intent, REQUEST_CODE_FACE_SESSION);
+                        } catch (Exception e) {
+                            Log.d("UqudoPlugin", e.getMessage(), e);
+                            sendError(SessionStatusCode.UNEXPECTED_ERROR.name(), e.getMessage(), null);
+                        }
+                    }
+                });
+
             } catch (Exception e) {
                 Log.d("UqudoPlugin", e.getMessage(), e);
                 sendError(SessionStatusCode.UNEXPECTED_ERROR.name(), e.getMessage(), null);
@@ -529,19 +550,19 @@ public class UqudoIdPlugin extends CordovaPlugin {
                     if (faceObject.has("allowClosedEyes") && faceObject.getBoolean("allowClosedEyes")) {
                         faceBuilder.allowClosedEyes();
                     }
-                    if (faceObject.has("obfuscationType")){
-                        if (faceObject.getString("obfuscationType").equals("FILLED")){
+                    if (faceObject.has("obfuscationType")) {
+                        if (faceObject.getString("obfuscationType").equals("FILLED")) {
                             faceBuilder.enableAuditTrailImageObfuscation(ObfuscationType.FILLED);
-                        } else if (faceObject.getString("obfuscationType").equals("BLURRED")){
+                        } else if (faceObject.getString("obfuscationType").equals("BLURRED")) {
                             faceBuilder.enableAuditTrailImageObfuscation(ObfuscationType.BLURRED);
-                        } else if (faceObject.getString("obfuscationType").equals("FILLED_WHITE")){
+                        } else if (faceObject.getString("obfuscationType").equals("FILLED_WHITE")) {
                             faceBuilder.enableAuditTrailImageObfuscation(ObfuscationType.FILLED_WHITE);
                         }
                     }
                     if (faceObject.has("isOneToNVerificationEnabled") && faceObject.getBoolean("isOneToNVerificationEnabled")) {
                         faceBuilder.enableOneToNVerification();
                     }
-                    
+
                     if (faceObject.has("enableActiveLiveness") && faceObject.getBoolean("enableActiveLiveness")) {
                         LivenessGesture disableGesture = null;
                         if (faceObject.has("disableLivenessGesture")) {
@@ -582,20 +603,32 @@ public class UqudoIdPlugin extends CordovaPlugin {
                 }
                 lookup.setToken(json.getString("authorizationToken"));
                 lookup.setDocumentType(DocumentType.valueOf(json.getString("documentType")));
-                if (json.has("appearanceMode")) {
-                    if ("LIGHT".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    } else if ("DARK".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    } else if ("SYSTEM".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
+                this.cordova.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (json.has("appearanceMode")) {
+                                if ("LIGHT".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                                } else if ("DARK".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                                } else if ("SYSTEM".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                                }
+                            } else {
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                            }
+                            Intent intent = lookup.build(context);
+                            UqudoIdPlugin.this.cordova.setActivityResultCallback(UqudoIdPlugin.this);
+                            UqudoIdPlugin.this.cordova.startActivityForResult(UqudoIdPlugin.this, intent, REQUEST_CODE_LOOKUP);
+                        } catch (Exception e) {
+                            Log.d("UqudoPlugin", e.getMessage(), e);
+                            sendError(SessionStatusCode.UNEXPECTED_ERROR.name(), e.getMessage(), null);
+                        }
                     }
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                }
-                Intent intent = lookup.build(context);
-                cordova.setActivityResultCallback(this);
-                cordova.startActivityForResult(this, intent, REQUEST_CODE_LOOKUP);
+                });
+
             } catch (Exception e) {
                 Log.d("UqudoPlugin", e.getMessage(), e);
                 sendError(SessionStatusCode.UNEXPECTED_ERROR.name(), e.getMessage(), null);
@@ -610,7 +643,7 @@ public class UqudoIdPlugin extends CordovaPlugin {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_ENROLLMENT || requestCode == REQUEST_CODE_ACCOUNT_RECOVERY
-                || requestCode == REQUEST_CODE_FACE_SESSION || requestCode == REQUEST_CODE_LOOKUP) {
+            || requestCode == REQUEST_CODE_FACE_SESSION || requestCode == REQUEST_CODE_LOOKUP) {
             if (resultCode == Activity.RESULT_OK) {
                 PluginResult result = new PluginResult(PluginResult.Status.OK, data.getStringExtra("data"));
                 result.setKeepCallback(true);
@@ -631,51 +664,51 @@ public class UqudoIdPlugin extends CordovaPlugin {
             try {
                 JSONObject json = new JSONObject(message);
                 UqudoBuilder.Reading readingBuilder = new UqudoBuilder.Reading();
-                
+
                 if (json.has("authorizationToken")) {
                     readingBuilder.setToken(json.getString("authorizationToken"));
                 }
-                
+
                 if (json.has("sessionId")) {
                     readingBuilder.setSessionId(json.getString("sessionId"));
                 }
-                
+
                 if (json.has("userIdentifier")) {
                     readingBuilder.setUserIdentifier(UUID.fromString(json.getString("userIdentifier")));
                 }
-                
+
                 if (json.has("nonce")) {
                     readingBuilder.setNonce(json.getString("nonce"));
                 }
-                
+
                 if (json.has("documentType")) {
                     readingBuilder.setDocumentType(DocumentType.valueOf(json.getString("documentType")));
                 }
-                
+
                 if (json.has("documentNumber")) {
                     readingBuilder.setDocumentNumber(json.getString("documentNumber"));
                 }
-                
+
                 if (json.has("dateOfBirth")) {
                     readingBuilder.setDateOfBirth(json.getString("dateOfBirth"));
                 }
-                
+
                 if (json.has("dateOfExpiry")) {
                     readingBuilder.setDateOfExpiry(json.getString("dateOfExpiry"));
                 }
-                
+
                 if (json.has("mrz")) {
                     readingBuilder.setMRZ(json.getString("mrz"));
                 }
-                
+
                 if (json.has("isReturnDataForIncompleteSession") && json.getBoolean("isReturnDataForIncompleteSession")) {
                     readingBuilder.returnDataForIncompleteSession();
                 }
-                
+
                 if (json.has("isSecuredWindowsDisabled") && json.getBoolean("isSecuredWindowsDisabled")) {
                     readingBuilder.disableSecureWindow();
                 }
-                
+
                 if (json.has("facialRecognitionSpecification")) {
                     FacialRecognitionConfigurationBuilder faceBuilder = new FacialRecognitionConfigurationBuilder();
                     JSONObject faceObject = json.getJSONObject("facialRecognitionSpecification");
@@ -697,12 +730,12 @@ public class UqudoIdPlugin extends CordovaPlugin {
                     if (faceObject.has("allowClosedEyes") && faceObject.getBoolean("allowClosedEyes")) {
                         faceBuilder.allowClosedEyes();
                     }
-                    if (faceObject.has("obfuscationType")){
-                        if (faceObject.getString("obfuscationType").equals("FILLED")){
+                    if (faceObject.has("obfuscationType")) {
+                        if (faceObject.getString("obfuscationType").equals("FILLED")) {
                             faceBuilder.enableAuditTrailImageObfuscation(ObfuscationType.FILLED);
-                        } else if (faceObject.getString("obfuscationType").equals("BLURRED")){
+                        } else if (faceObject.getString("obfuscationType").equals("BLURRED")) {
                             faceBuilder.enableAuditTrailImageObfuscation(ObfuscationType.BLURRED);
-                        } else if (faceObject.getString("obfuscationType").equals("FILLED_WHITE")){
+                        } else if (faceObject.getString("obfuscationType").equals("FILLED_WHITE")) {
                             faceBuilder.enableAuditTrailImageObfuscation(ObfuscationType.FILLED_WHITE);
                         }
                     }
@@ -710,7 +743,7 @@ public class UqudoIdPlugin extends CordovaPlugin {
                     if (faceObject.has("isOneToNVerificationEnabled") && faceObject.getBoolean("isOneToNVerificationEnabled")) {
                         faceBuilder.enableOneToNVerification();
                     }
-                    
+
                     if (faceObject.has("enableActiveLiveness") && faceObject.getBoolean("enableActiveLiveness")) {
                         LivenessGesture disableGesture = null;
                         if (faceObject.has("disableLivenessGesture")) {
@@ -732,7 +765,7 @@ public class UqudoIdPlugin extends CordovaPlugin {
 
                     readingBuilder.enableFacialRecognition(faceBuilder.build());
                 }
-                
+
                 if (json.has("backgroundCheckConfiguration")) {
                     BackgroundCheckConfigurationBuilder backgroundCheckConfigurationBuilder = new BackgroundCheckConfigurationBuilder();
                     JSONObject backgroundObject = json.getJSONObject("backgroundCheckConfiguration");
@@ -750,26 +783,37 @@ public class UqudoIdPlugin extends CordovaPlugin {
                     }
                     readingBuilder.enableBackgroundCheck(backgroundCheckConfigurationBuilder.build());
                 }
-                
+
                 if (json.has("isLookupEnabled") && json.getBoolean("isLookupEnabled")) {
                     readingBuilder.enableLookup();
                 }
-                
-                if (json.has("appearanceMode")) {
-                    if ("LIGHT".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    } else if ("DARK".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    } else if ("SYSTEM".equals(json.getString("appearanceMode"))) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
+                this.cordova.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (json.has("appearanceMode")) {
+                                if ("LIGHT".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                                } else if ("DARK".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                                } else if ("SYSTEM".equals(json.getString("appearanceMode"))) {
+                                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                                }
+                            } else {
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                            }
+
+                            Intent intent = readingBuilder.build(context);
+                            UqudoIdPlugin.this.cordova.setActivityResultCallback(UqudoIdPlugin.this);
+                            UqudoIdPlugin.this.cordova.startActivityForResult(UqudoIdPlugin.this, intent, REQUEST_CODE_READING);
+                        } catch (Exception e) {
+                            Log.d("UqudoPlugin", e.getMessage(), e);
+                            sendError(SessionStatusCode.UNEXPECTED_ERROR.name(), e.getMessage(), null);
+                        }
                     }
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                }
-                
-                Intent intent = readingBuilder.build(context);
-                cordova.setActivityResultCallback(this);
-                cordova.startActivityForResult(this, intent, REQUEST_CODE_READING);
+                });
+
             } catch (Exception e) {
                 Log.e("UqudoIdPlugin", e.getMessage(), e);
                 sendError(SessionStatusCode.UNEXPECTED_ERROR.name(), e.getMessage(), null);

@@ -140,7 +140,13 @@ UqudoSDK.prototype.DocumentType = Object.freeze(
         IDN_ID: 'IDN_ID',
         IRQ_ID_NATIONAL: 'IRQ_ID_NATIONAL',
         IRQ_ID_RESIDENT: 'IRQ_ID_RESIDENT',
-        MAR_ID: 'MAR_ID'
+        MAR_ID: 'MAR_ID',
+        YEM_ID: 'YEM_ID',
+        JOR_ID: 'JOR_ID',
+        SYR_ID: 'SYR_ID',
+        OMN_ID_NATIONAL_MRZ: 'OMN_ID_NATIONAL_MRZ',
+        OMN_ID_INVESTOR: 'OMN_ID_INVESTOR',
+        PASSPORT_OMN: 'PASSPORT_OMN'
     } 
 );
 var BackgroundCheckType = Object.freeze(

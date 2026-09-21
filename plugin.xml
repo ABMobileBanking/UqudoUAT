@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin
-	xmlns="http://apache.org/cordova/ns/plugins/1.0" id="uqudosdk-cordova" version="3.6.2">
+	xmlns="http://apache.org/cordova/ns/plugins/1.0" id="uqudosdk-cordova" version="3.10.0">
 	<name>UqudoIdPlugin</name>
 	<js-module name="UqudoIdPlugin" src="www/UqudoIdPlugin.js">
 		<clobbers target="cordova.plugins.UqudoIdPlugin" />
@@ -51,7 +51,7 @@
 		<podspec>
 			<config/>
 			<pods use-frameworks="true">
-				<pod name="UqudoSDK" spec="3.6.2" />
+				<pod name="UqudoSDK" spec="3.10.0" />
 			</pods>
 		</podspec>
 		<podspec>

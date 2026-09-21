@@ -1,3 +1,41 @@
+## 3.10.0
+
+* **Android - Improved facial recognition experience on foldable devices:** Fixed a layout issue affecting facial recognition on foldable devices, where the face-positioning oval could provide misleading guidance. The updated layout now provides clearer and more accurate guidance to help users position their face correctly.
+* **Android – Improved SDK session handling:** Added safeguards to gracefully terminate SDK sessions in rare cases of unexpected behavior. For example, if an activity detects that it was launched unexpectedly or outside the intended SDK lifecycle, it will now detect the invalid state and terminate gracefully instead of causing a crash.
+* **iOS – Fixed NFC progress indicators for iOS 27:** Fixed an issue where NFC popup progress emojis were not visible on the upcoming iOS 27. If you use the SDK’s NFC/Reading functionality, we strongly recommend upgrading to this version, as this issue has a significant impact on the user experience.
+* **Android & iOS – Improved presentation attack detection:** Enhanced the automatic detection of screen presentation and printed-document attacks. Please carefully review the initial notes in the [Verification Object documentation](https://docs.uqudo.com/docs/kyc/uqudo-sdk/sdk-result/data-structure/verification-object?utm_source=chatgpt.com), as they contain important information related to this improvement.
+* **Android & iOS – Improved device attestation:** Enhanced device attestation detection capabilities for more robust identification of potentially compromised or untrusted devices.
+
+## 3.9.0
+
+* New Document Support: Added support for the Omani Investor ID card.
+* Document Scanning: Improved Omani ID detection across all card versions, with enhanced recognition of the latest Omani Resident ID. Improved Algerian ID and Omani DL detection.
+* Tracing: Introduced a new REQUEST_TIMEOUT status code. This status code is returned when an API request times out because the server does not receive the request body within the configured time limit. This typically occurs when the device is experiencing a very slow network connection. In previous SDK versions, this scenario resulted in an UNEXPECTED_ERROR status instead.
+* Android: Fixed an issue where the disableHelpPage() option was not being applied correctly. The setting now works as expected.
+* Miscellaneous: Includes minor bug fixes and minor improvements.
+
+## 3.8.0
+
+* New Document Support:
+  - Added support for Jordanian, Syrian, and Yemeni national IDs
+* Android: Upgraded CameraX library to version 1.5.3. If your application also uses CameraX, you must upgrade to the same version. Please note that this version requires a minimum SDK level of 23, so starting from this release your application must set `minSdkVersion` to 23 in order to build successfully
+* NFC: Added support for eID cards (ID-1 format) issued by countries that include a Machine Readable Zone (MRZ) on the back, comply with ICAO Doc 9303, and contain a contactless chip (ISO/IEC 14443 / NFC). This feature is available in the "Enrollment Flow" and "NFC / Reading Flow" using the document type GENERIC_ID or MRZ (when scanning only the back side). If a country is not supported, the NFC reading step is skipped according to the SDK’s default configuration
+* Tampering Detection: The ID photo tampering detection model has been removed from the SDK, and disableTamperingRejection() is now a no-op
+  - What does this mean? From a tampering detection perspective, nothing changes, as all SDK checks continue to be performed on the server along with additional validations
+  - How am I impacted? There should be no impact if you follow best practices, specifically, validating SDK results on your side, including reviewing tampering detection scores
+  - For more information about this change, please contact support
+* Miscellaneous: Minor bug fixes and improvements
+
+## 3.7.0-patch.1
+
+* Resolved possible race condition that triggers a CalledFromWrongThreadException on UI and theme updates
+
+## 3.7.0
+
+* Introduced a new SDK feature that performs device attestation and returns the result within the SDK result object. The Device Attestation output must be actively parsed and evaluated in your backend as part of your core business logic. Each flag should be assessed based on your specific risk model and use case. While some attributes may require contextual evaluation depending on your fraud strategy and internal policies, others should be treated as immediate high-risk indicators. Please see "Device Attestation" for more details.
+Please note that this feature is automatically enabled for new customers. Existing customers must request activation.
+* Added NFC support for the latest version of the Bahrain ID card.
+
 ## 3.6.2
 
 * Added support for the latest version of the Omani ID for both citizens and residents.
