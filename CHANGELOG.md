@@ -1,3 +1,12 @@
+## 3.11.0
+
+* iOS: Added support for iPhone Duo in its unfolded state.
+* Android: Extended the screenSharing attestation indicator to detect screen recording on Android 15 and later, matching existing iOS support.
+* Android & iOS: Improved document quality detection during document scanning.
+* Android & iOS: Fixed NFC chip validation failures for ICAO Doc 9303-compliant identity documents with multiple PACE configurations.
+* Android & iOS: Enhanced device attestation to better detect potentially compromised or untrusted devices.
+* Android & iOS: Minor bug fixes.
+
 ## 3.10.0
 
 * **Android - Improved facial recognition experience on foldable devices:** Fixed a layout issue affecting facial recognition on foldable devices, where the face-positioning oval could provide misleading guidance. The updated layout now provides clearer and more accurate guidance to help users position their face correctly.
